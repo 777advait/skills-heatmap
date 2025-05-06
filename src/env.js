@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     CANDIDATES_SERVICE_URL: z.string().url(),
+    NODE_ENV: z.enum(["development", "test", "production"]),
   },
 
   /**
@@ -25,6 +26,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     CANDIDATES_SERVICE_URL: process.env.CANDIDATES_SERVICE_URL,
+    NODE_ENV: process.env.NODE_ENV,
 
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
