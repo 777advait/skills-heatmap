@@ -14,4 +14,3 @@ class CandidatesService extends BaseService implements ICandidateService {
 }
 
 export const candidatesService = new CandidatesService();
-console.log(await candidatesService.getCandidates());

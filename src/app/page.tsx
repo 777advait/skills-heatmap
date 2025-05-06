@@ -4,6 +4,7 @@ import { CandidatesSidebar } from "~/components/candidates/candidates-sidebar";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
+  void api.candidates.getCandidates.prefetch();
   return (
     <HydrateClient>
       <CandidatesSidebar />
