@@ -1,6 +1,8 @@
 import { env } from "~/env";
-import type { ICandidateService, TCandidate } from "~/types/candidates.types";
-import ky, { HTTPError } from "ky";
+import type {
+  ICandidateService,
+  TCandidate,
+} from "~/utils/types/candidates.types";
 import { BaseService } from "./base.service";
 
 class CandidatesService extends BaseService implements ICandidateService {

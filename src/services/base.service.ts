@@ -1,8 +1,8 @@
 import ky, { HTTPError, type KyInstance } from "ky";
 
 export class BaseService {
-  protected api: KyInstance;
-  protected serviceUrl: URL;
+  protected readonly api: KyInstance;
+  protected readonly serviceUrl: URL;
 
   constructor(baseUrl: string, subPath?: string) {
     this.serviceUrl = new URL(subPath ? `${baseUrl}/${subPath}` : baseUrl);
@@ -13,6 +13,7 @@ export class BaseService {
         limit: 3,
         methods: ["GET", "POST"],
         statusCodes: [408, 413, 429, 500, 502, 503, 504],
+        
       },
     });
   }
@@ -26,13 +27,11 @@ export class BaseService {
     endpoint = endpoint.replace(/^\/+/, "");
 
     try {
-      const res = await this.api<ResponseShape>(endpoint, {
+      return await this.api<ResponseShape>(endpoint, {
         method,
         headers,
         ...(method === "POST" && body ? { json: body } : {}),
-      });
-
-      return res.json();
+      }).json();
     } catch (err) {
       throw err instanceof HTTPError
         ? new Error(

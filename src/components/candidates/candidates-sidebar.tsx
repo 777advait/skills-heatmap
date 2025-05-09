@@ -1,15 +1,15 @@
 "use client";
 
-import { Home, Loader2, PlusCircle, User } from "lucide-react";
+import { PlusCircle, User } from "lucide-react";
 import React from "react";
 import * as SidebarComponent from "~/components/ui/sidebar";
+import { useCandidatesStore } from "~/providers/stores";
 import { api } from "~/trpc/react";
-import type { TCandidate } from "~/types/candidates.types";
 
 export function CandidatesSidebar() {
+  const { selectedCandidates } = useCandidatesStore((state) => state);
   const { data: appliedCandidates, isLoading } =
     api.candidates.getCandidates.useQuery();
-  const selectedCandidates: TCandidate[] = [];
 
   return (
     <SidebarComponent.Sidebar>
