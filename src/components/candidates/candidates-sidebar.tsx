@@ -1,13 +1,40 @@
 "use client";
 
-import { PlusCircle, User } from "lucide-react";
+import { MinusCircle, PlusCircle, User, type LucideIcon } from "lucide-react";
 import React from "react";
 import * as SidebarComponent from "~/components/ui/sidebar";
 import { useCandidatesStore } from "~/providers/stores";
 import { api } from "~/trpc/react";
 
+function CandidateMenuItem({
+  name,
+  ActionIcon,
+  action,
+}: {
+  name: string;
+  ActionIcon: LucideIcon;
+  action?: () => void;
+}) {
+  return (
+    <SidebarComponent.SidebarMenuItem onClick={action}>
+      <div className="flex flex-1 flex-col">
+        <SidebarComponent.SidebarMenuButton asChild>
+          <div className="flex w-full items-center justify-between">
+            <div className="flex min-w-0 items-center gap-2">
+              <User className="shrink-0" />
+              <p className="truncate">{name}</p>
+            </div>
+            <ActionIcon className="ml-2 shrink-0" />
+          </div>
+        </SidebarComponent.SidebarMenuButton>
+      </div>
+    </SidebarComponent.SidebarMenuItem>
+  );
+}
+
 export function CandidatesSidebar() {
-  const { selectedCandidates } = useCandidatesStore((state) => state);
+  const { selectedCandidates, selectCandidate, deselectCandidate } =
+    useCandidatesStore((state) => state);
   const { data: appliedCandidates, isLoading } =
     api.candidates.getCandidates.useQuery();
 
@@ -25,14 +52,12 @@ export function CandidatesSidebar() {
             {selectedCandidates.length !== 0 ? (
               <SidebarComponent.SidebarMenu className="space-y-1 hover:cursor-pointer">
                 {selectedCandidates.map((candidate) => (
-                  <SidebarComponent.SidebarMenuItem key={candidate.id}>
-                    <SidebarComponent.SidebarMenuButton asChild>
-                      <div>
-                        <User />
-                        <span>{candidate.name}</span>
-                      </div>
-                    </SidebarComponent.SidebarMenuButton>
-                  </SidebarComponent.SidebarMenuItem>
+                  <CandidateMenuItem
+                    name={candidate.name}
+                    key={candidate.id}
+                    ActionIcon={MinusCircle}
+                    action={() => deselectCandidate(candidate)}
+                  />
                 ))}
               </SidebarComponent.SidebarMenu>
             ) : (
@@ -54,21 +79,21 @@ export function CandidatesSidebar() {
                   Loading candidates...
                 </p>
               ) : (
-                appliedCandidates?.map((candidate) => (
-                  <SidebarComponent.SidebarMenuItem key={candidate.id}>
-                    <div className="flex flex-1 flex-col">
-                      <SidebarComponent.SidebarMenuButton asChild>
-                        <div className="flex w-full items-center justify-between">
-                          <div className="flex min-w-0 items-center gap-2">
-                            <User className="shrink-0" />
-                            <p className="truncate">{candidate.name}</p>
-                          </div>
-                          <PlusCircle className="ml-2 shrink-0" />
-                        </div>
-                      </SidebarComponent.SidebarMenuButton>
-                    </div>
-                  </SidebarComponent.SidebarMenuItem>
-                ))
+                appliedCandidates
+                  ?.filter(
+                    (candidate) =>
+                      !selectedCandidates.some(
+                        (selected) => selected.id === candidate.id,
+                      ),
+                  )
+                  ?.map((candidate) => (
+                    <CandidateMenuItem
+                      name={candidate.name}
+                      key={candidate.id}
+                      ActionIcon={PlusCircle}
+                      action={() => selectCandidate(candidate)}
+                    />
+                  ))
               )}
             </SidebarComponent.SidebarMenu>
           </SidebarComponent.SidebarGroupContent>
